@@ -105,3 +105,13 @@ docker run -it --rm --network rrtest alpine shß
 # 38 Image Layers
 
 docker history nginx:latest  (history of image layers)
+
+![image_layer](./image_layer1.png)
+![image_layer](./image_layer2.png)
+
+docker image inspect    -> show json meta data of the image
+
+# 39 Image tags and push. How to upload to Docker Hub. Image ID vs Tag
+
+Tags are only labels point to the image, so one image may has multiply tags at the same time(numbers and strs)
+
