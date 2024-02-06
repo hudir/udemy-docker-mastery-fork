@@ -115,3 +115,48 @@ docker image inspect    -> show json meta data of the image
 
 Tags are only labels point to the image, so one image may has multiply tags at the same time(numbers and strs)
 
+#### Retag the image
+docker image tag nginx bretfisher/nginx
+
+
+docker image tag ubuntu hudir/ubuntu
+docker image push hudir/ubuntu
+docker login
+
+cat .docker/config.json
+docker image tag hudir/ubuntu hudir/ubuntu:testing
+
+
+# 40 building Images: The Dockerfile
+deal with docker file in command line with -f, e.g. docker build -f some-dockerfile
+
+ues && to chain shall command to make suer all of them are in same layer
+
+# 41 Building Images Running Docker Builds
+docker image build -t customnginx . (name)
+
+# 42 copy the html file in to container
+
+docker image build -t nginx-with-html .
+docker image tag nginx-with-html:latest hudir/nginx-with-html:latest
+
+# 43 Assignment 1 
+docker image build -t node-alpine .
+docker container run -p 80:3000 node-alpine
+docker image tag node-alpine:latest hudir/node-alpine:latest
+docker image push hudir/node-alpine
+docker image rm hudir/node-alpine
+docker container run -p 80:3000 hudir/node-alpine
+
+#44 Using Prune to keep Docker System clean
+docker image prune to clean up just "dangling" images
+docker system prune will clean up everything you're not currently using
+The big one is usually docker image prune -a which will remove all images you're not using. Use docker system df to see space usage.
+
+Here's a YouTube video I made about it: https://youtu.be/_4QzP7uwtvI
+
+# 46 Container Lifetime & Persistent Data
+- container are usually immutable and ephemeral
+- Design goal -> only re-deploy containers, never change
+- Unique data(database or sth)
+- 
