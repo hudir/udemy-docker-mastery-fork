@@ -159,4 +159,28 @@ Here's a YouTube video I made about it: https://youtu.be/_4QzP7uwtvI
 - container are usually immutable and ephemeral
 - Design goal -> only re-deploy containers, never change
 - Unique data(database or sth)
-- 
+- ensure "separation of concerns"
+- Volumen -> make special location outside of contaniner UFS for "persistent data"
+   - cross container moveols and attach what ever container we want
+   - bind mounts: link container path to host path
+
+# 47 Persistent Data: Volumes
+VOLUME conmand in Dockerfile 
+mysql:8 still have Volumes
+" "Volumes": {
+                "/var/lib/mysql": {}
+            },
+"
+
+docker image inspect [name]
+docker volume ls
+docker container run -d --name mysqlhudir -e MYSQL_ALLOW_EMPTY_PASSWORD=True mysql
+docker container inspect [name]
+docker volume inspect cde09dc9b7b5bb06c57ae336ef8a42d767f9cb7eae64894f4c8567fbd12d6062
+
+this means that even you stop the container and delete them, the data(volume) is still there(linux vm On mac and win) 
+
+## change the volume name with name:path
+docker container run -d --name mysqlhudir2 -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v hudir-mysql:/var/lib/mysql mysql
+
+### docker volume create   -> required to do this before "docker run" to use costom drivers and labels
