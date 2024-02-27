@@ -184,3 +184,49 @@ this means that even you stop the container and delete them, the data(volume) is
 docker container run -d --name mysqlhudir2 -e MYSQL_ALLOW_EMPTY_PASSWORD=True -v hudir-mysql:/var/lib/mysql mysql
 
 ### docker volume create   -> required to do this before "docker run" to use costom drivers and labels
+
+### docker volume create  --help 
+
+# 47 Persistent Data: bind mounting
+-> Maps a host file or directory to a container file or directory
+-> Basiclly just tow locations pointing to the same file(s)
+-> Can't use in Dockerfile, must be at container run
+
+... run -v /User/bret/stuff:/path/container(mac/limux )
+
+docker container run -d --name nginxhudir -p 80:80 -v $(pwd):/usr/share/nginx/html nginx
+
+
+# 48 Assingment
+postgres volumn /var/lib/postgresql/data
+docker container run --name psqlhudir1 -p 5432:5432 -v psql-data:/var/lib/postgresql/data --env POSTGRES_HOST_AUTH_METHOD=trust postgres:15.1
+docker container run --name psqlhudir2 -p 5432:5432 -v psql-data:/var/lib/postgresql/data --env POSTGRES_HOST_AUTH_METHOD=trust postgres:15.2      
+
+
+answer: 
+```docker volume create psql
+docker run -d --name psql1 -e POSTGRES_PASSWORD=mypassword -v psql:/var/lib/postgresql/data postgres:15.1
+docker logs psql1
+docker stop psql1
+docker run -d --name psql2 -e POSTGRES_PASSWORD=mypassword -v psql:/var/lib/postgresql/data postgres:15.2
+docker logs psql2
+docker stop psql2```
+
+# 49 File Permissions Across Multiple Containers
+https://www.udemy.com/course/docker-mastery/learn/lecture/31063670#overview
+So for troubleshooting, this is what I do:
+Use the command ps aux in each container to see a list of processes and usernames. The process needs a matching user ID or group ID to access the files in question.
+
+Find the UID/GID in each containers `/etc/passwd` and `/etc/group` to translate names to numbers. You'll likely find there a miss-match, where one containers process originally wrote the files with its UID/GID and the other containers process is running as a different UID/GID.
+
+Figure out a way to ensure both containers are running with either a matching user ID or group ID. This is often easier to manage in your own custom app (when using a language base image like python or node) rather than trying to change a 3rd party app's container (like nginx or postgres)... but it all depends. This may mean creating a new user in one Dockerfile and setting the startup user with USER. (see USER docs) The node default image has a good example of the commands for creating a user and group with hard-coded IDs:
+
+RUN groupadd --gid 1000 node \\
+        && useradd --uid 1000 --gid node --shell /bin/bash --create-home node
+USER 1000:1000
+Note: When setting a Dockerfile's USER, use numbers, which work better in Kubernetes than using names.
+
+Note 2: If ps doesn't work in your container, you may need to install it. In debian-based images with apt, you can add it with apt-get update && apt-get install procps
+
+# 50 Assignment: Bind Mounts
+docker run -p 80:4000 -v $(pwd):/site bretfisher/jekyll-serve

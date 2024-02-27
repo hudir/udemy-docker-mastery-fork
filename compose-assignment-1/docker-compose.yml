@@ -1,0 +1,20 @@
+# Drupal with PostgreSQL
+
+services:
+   drupal:
+       image: drupal:9
+       ports:
+         - '8080:80'
+       volumes:
+         - drupal-modules:/var/www/html/modules
+
+# service name is always the host
+   postgres:
+       image: postgres:14
+       environment:
+          - POSTGRES_DB=drupal
+          - POSTGRES_USER=user
+          - POSTGRES_PASSWORD=pass
+
+volumes:
+   drupal-modules:
