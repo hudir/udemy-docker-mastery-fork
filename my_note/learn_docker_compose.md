@@ -17,3 +17,12 @@ used for local/test automation with those YAML files
 
 docker compose up -d
 docker compose down
+
+### Using compose to build
+docker compose up
+
+rebuild with docker compose build or docker compose --build
+
+For clean up:
+docker compose down --rmi local
+delete all local cached images

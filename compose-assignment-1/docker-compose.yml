@@ -16,5 +16,6 @@ services:
           - POSTGRES_USER=user
           - POSTGRES_PASSWORD=pass
 
+# Create the volume
 volumes:
    drupal-modules:
