@@ -1,1 +1,33 @@
 # create your drupal and postgres config here, based off the last assignment
+# Drupal with PostgreSQL
+
+services:
+   drupal-2:
+       image: custom-drupal
+       build: .
+       ports:
+         - '8080:80'
+       volumes:
+        #  - drupal-modules:/var/www/html/modules
+         - drupal-modules:/var/www/html/modules
+
+
+# service name is always the host
+   mariadb1:
+       image: mariadb
+       volumes:
+         - drupal-data:/var/lib/mariadb2/data
+       environment:
+         - MARIADB_ROOT_PASSWORD=my-secret-pw
+         - MARIADB_DATABASE = drupal
+         - MARIADB_USER = user
+         - MARIADB_PASSWORD = pass
+
+          # - POSTGRES_DB=drupal
+          # - POSTGRES_USER=user
+          # - POSTGRES_PASSWORD=pass
+
+# Create the volume
+volumes:
+   drupal-modules:
+   drupal-data:
