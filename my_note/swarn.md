@@ -91,4 +91,30 @@ postgres:14
  For container-to-container traffic inside a single Swarm
  Optional IPSec(AES) encryption on network creation
  Each service can be connected to multiple networks
- 1
+ ```
+ docker network create --driver overlay mydrupal
+ docker network ls
+ ```
+ docker_gwbridge -> out going network
+ ingress -> swarm default
+ ```
+docker service create --name psql --network mydrupal -e POSTGRES_PASSWORD=mypass postgres:14
+docker service create --name drupal --network mydrupal -p 80:80 drupal:9
+watch docker service ls -> watch the command
+docker service inspect drupal
+```
+
+## Swarm routing mesh - Global traffic router
+Routing Mesh
+- Routes ingress(incoming) packets for a Service to proper Task
+- Spans all nodes in Swarm
+- Uses IPVS from Linux Kernel
+- Load balances Swarm Services across their Tasks
+- Two ways this works:
+- 1. Container-to-container in a Overlay network (uses VIP)
+- 2. External traffic incoming to published ports (all nodes listen)
+
+
+
+
+git -c user.name="hudir" -c user.email=hudirybw@gmail.com ci -am "keep on swarm"
