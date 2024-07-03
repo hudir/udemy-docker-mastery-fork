@@ -100,7 +100,7 @@ postgres:14
  ```
 docker service create --name psql --network mydrupal -e POSTGRES_PASSWORD=mypass postgres:14
 docker service create --name drupal --network mydrupal -p 80:80 drupal:9
-watch docker service ls -> watch the command
+watch docker service ls -> watch the command(not docker cmd)
 docker service inspect drupal
 ```
 
@@ -115,6 +115,18 @@ Routing Mesh
 - 2. External traffic incoming to published ports (all nodes listen)
 
 
+docker service rm <service name>
 
 
-git -c user.name="hudir" -c user.email=hudirybw@gmail.com ci -am "keep on swarm"
+
+
+
+
+
+
+
+
+
+
+
+git -c user.name="hudir" -c user.email=hudirybw@gmail.com ci -am "keep on swarm" && git ps
