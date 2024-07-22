@@ -131,11 +131,30 @@ docker service create --name result --replicas 1 --network backend -p 5001:80 br
 
 
 
+## Stacks
+- Production Grade Compose
+- a new layer of abstraction to Swarm called Stacks
+- accept Compose files as their declearative definition for services, networks, and volumes , also scrects
+- use 'docker stack deploy' rather then docker service create
+- stacks manages all those objects. Adds stack name to start of their name
+- new deploy: key in compose file. Can't do build
+- compose now ignores deploy:, swarm igonore build:
+- docker-compose cli not needed on Swarm server
+
+docker stack deploy -c example-voting-app-stack.yml voteapp
+above command, -c for compose, then compose file, then stack name
+```
+docker stack ls
+docker stack <stack name>
+docker stack ps <stack name>
+docker stack ps voteapp 
+docker stack services voteapp 
+```
+
+If make changes/updates, just re-run the deploy command.
 
 
 
 
 
-
-
-git -c user.name="hudir" -c user.email=hudirybw@gmail.com ci -am "keep on swarm" && git ps
+g -c user.name="hudir" -c user.email=hudirybw@gmail.com ci -am "keep on swarm" && gs
