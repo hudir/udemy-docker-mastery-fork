@@ -155,6 +155,42 @@ If make changes/updates, just re-run the deploy command.
 
 
 
+## Secrets Storage
+- Easiest "secure" solution for storing secrets in Swarm
+- Supports generic strings or binary content up tp 500Kb in size
+- Doesn't require apps to be rewritten
+
+### Secrets Storage Cont.
+- As of Docker 1.13.0 Swarm Raft DB is encrypted on disk
+- Only stored on disk on Manager nodes
+- Default is Managers and Workers "control plane" is TLS + Mutual Auth
+- Secrets are first stored in Swarm, then assigned to a Service(s)
+- Only containers in assigned Service(s) can see them
+- They look like files in container but are actually in-memory fs
+- /run/secrets/<secret_name> or /run/secrets/<secret_alias> 
+- Local docker-compose can use file-based secrets, but not secure
+
+```
+docker secret create <name in secret db> <filename>
+docker secret create psql_user 
+
+docker secret create psql_user psql_user.txt 
+echo "myDBpassWORD" | docker secret create psql_pass -
+above command - at end is tell docker to read msg from std input
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 g -c user.name="hudir" -c user.email=hudirybw@gmail.com ci -am "keep on swarm" && gs
