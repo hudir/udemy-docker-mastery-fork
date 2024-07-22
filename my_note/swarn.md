@@ -178,18 +178,24 @@ docker secret create psql_user psql_user.txt
 echo "myDBpassWORD" | docker secret create psql_pass -
 above command - at end is tell docker to read msg from std input
 
+docker secret ls
+docker secret inspect psql_user 
+
+docker service create --name psql --secret psql_user --secret psql_pass -e POSTGRES_PASSWORD_FILE=/run/secrets/psql_pass -e POSTGRES_USER_FILE=/run/secrets/psql_user postgres
 
 
+docker service ls
+docker service ps psql
+
+docker exec -it <container name> bash
+
+ls /run/secrets/
+cat /run/secrets/psql_pass 
 
 
-
-
-
-
-
-
-
-
+docker service update --secret-rm <secret name> <sercive name>
+this will re-create a new container
+docker service update --secret-rm psql_user psql
 
 
 
