@@ -149,6 +149,8 @@ docker stack <stack name>
 docker stack ps <stack name>
 docker stack ps voteapp 
 docker stack services voteapp 
+
+docker stack rm voteapp 
 ```
 
 If make changes/updates, just re-run the deploy command.
@@ -196,6 +198,26 @@ cat /run/secrets/psql_pass
 docker service update --secret-rm <secret name> <sercive name>
 this will re-create a new container
 docker service update --secret-rm psql_user psql
+
+
+## Secret with compose files
+```
+docker stack deploy -c docker-compose.yml mydb
+
+```
+Diff -> remove stack will also remove secrets
+
+
+# Assigment for Create Stack with Secrets
+
+echo "myDBpassWORD" | docker secret create psql_password -
+echo "dbuser" | docker secret create psql_user -
+
+docker stack deploy -c docker-compose.yml myDrupal
+
+docker service update --secret-add psql_user --secret-add psql_password myDrupal_psql 
+
+
 
 
 
