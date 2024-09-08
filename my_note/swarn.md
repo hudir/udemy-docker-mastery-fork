@@ -218,6 +218,52 @@ docker stack deploy -c docker-compose.yml myDrupal
 docker service update --secret-add psql_user --secret-add psql_password myDrupal_psql 
 
 
+# docker lifecycle
+
+## Local dev with secrets
+```
+docker compose up -d
+docker compose exec psql cat /run/secrets/psql_user
+```
+This way not safe, work only file based secrets
+
+
+the override file will be run automaticly
+docker compose -f a.yml -f b.yml up
+
+docker compose -f a.yml -f b.yml up config -> combin/merge two files in one
+
+
+## Service updates
+- Provide rolling replacement of tasks/containers in a service
+- Limits downtime (be careful with "prevents" downtime)
+- Will replace containers for most changes
+- Has many, many cli options to control the update
+- Create options will usually change, addiing -add or -rm to them
+- Includes rollback and healthcheck options
+- Also has scale & rollback subcommand for quicker access
+  -docker service scale web=4 and docker service rollback web
+
+
+
+# Section 10 Swarm App Lifecycle
+
+## Dev, Build and Deploy with a single compose design
+
+For CI Testing: docker compose -f docker-compose.yml -f docker-compose.test.yml
+docker compose -f docker-compose.yml -f docker-compose.prod.yml config 
+
+docker compose -f docker-compose.yml -f docker-compose.prod.yml config > newFile.yml
+
+## Service updates
+
+- Provides rolling replacement of tasks/containers in a service
+- Limits downtime (not really prevents downtime)
+
+
+
+
+
 
 
 
