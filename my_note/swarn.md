@@ -243,6 +243,28 @@ docker compose -f a.yml -f b.yml up config -> combin/merge two files in one
 - Includes rollback and healthcheck options
 - Also has scale & rollback subcommand for quicker access
   -docker service scale web=4 and docker service rollback web
+- A stack deploy, when pre-existing, will issue service updates
+
+#### examples:
+ - Just update the image used to a newer version
+     docker service update --image myapp:1.2.1 <servicename>
+ - Adding an enviroment variable and remove a port
+     docker service update --env-add NODE_ENV=production --publish-rm 8080 <servicename>
+ - Change number of replicas of two services
+     docker service scale web=8 api=6
+
+ - Some command. just edit the YAML file, then
+    docker stack deploy -c file.yml <stackname>
+
+docker service create -p 8088:80 --name web nginx:1.13.7
+docker service ls
+docker service scale web=5
+docker service update --image nginx:1.13.6 web
+docker service update --publish-rm 8088 --publish-add 9090:80 web
+
+### rebalancing
+force update without anything, will rebalaning
+docker service update --force web
 
 
 
@@ -255,13 +277,111 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml config
 
 docker compose -f docker-compose.yml -f docker-compose.prod.yml config > newFile.yml
 
-## Service updates
 
-- Provides rolling replacement of tasks/containers in a service
-- Limits downtime (not really prevents downtime)
+# Section 11 Docker Healthchecks
+- Supported in Dockerfile, Compose YAML, docker run and Swarm Service
+- Docker engine will exec's the command in the container
+- e.g. curl localhost
+- It expects exit 0 (OK) or exit 1 (Error)
+- Three container states: starting, healthy, unhealthy
+- Much better then "is binary still running?"
+- Not a extenal monitoring replacement
+
+Healthcheck status shows up in docker container ls
+Check last 5 healthchecks with docker container inspect
+Docker run does nothing with healthchecks(no action)
+Service will replace tasks if they fail healthcheck
+Service updates wait for them before continuing
+
+example for docker run:
+```
+docker run \
+  --health-cmd="curl -f localhost:9200/_cluster/health || false" \
+  --health-interval=5s \
+  --health-retries=3 \
+  --health-timeout=2s \
+  --health-start-period=15s \
+  elasticsearch:2
+```
+Option for healthcheck command(Docker file)
+--interval=DURATION(default: 30s)
+--timeout=DURATION(default: 30s)
+--start-period=DURATION(default: 0s)  (17.09+)
+--retries=N(default: 3)
+
+Basic command using default options
+ HEALTHCHECK curl -f http://localhost/ || false
+
+Custom options with the command
+  HEALTHCHECK --timeout=2s --interval=3s --retries=3 \
+   CMD curl -f http://localhost/ || exit 1
+
+Example: Static website running in Nginx, just test default URL
+FROM nginx:1.13
+
+HEALTHCHECK --timeout=3s --interval=30s \
+ CMD curl -f http://localhost/ || exit 1
 
 
+Example2: PHP-FRM running behind Nginx, test the Nginx and FPM status URLs
+```
+FROM your-nginx-php-fpm-combo-image
 
+# don't do this if php-fpm is another container
+# must enable php-fpm ping/status in pool.ini
+# must forward /ping and /status urls from nginx to php-fpm
+
+HEALTHCHECK --interval=5s --timeout=3s \
+ CMD curl -f htttp://localhost/ping || exit 1
+```
+
+Example3: Use a PostgresSQL utility to test for ready stats
+```
+FROM postgres
+
+# specify real user with -U to prevent errors in log
+
+HEALTHCHECK --interval=5s --timeout=3s \
+ CMD pg_isready -U postgres || exit 1 
+```
+
+Example4 in Compose/Stack files:
+
+version: "2.1" (minimun for healthchecks)
+services:
+ web:
+  image:nginx
+  healthcheck:
+   test: ["CMD", "curl", "-f", "http://localhost"]
+   interval: 1m30
+   timeout: 10s
+   retries: 3
+   start_period: 1m #version 3.4 minimun
+
+
+try:
+docker container run --name p1 -d postgres
+docker container run --name p2 -d --health-cmd="pg_isready -U postgres || exit 1" postgres
+
+docker service create --name p1 postgres
+docker service create --name p2 --health-cmd="pg_isready -U postgres || exit 1" postgres
+
+
+# Section 11 Container Registries: Image Storage and Distribution
+
+## Docker hub
+- Image registry
+- Docker hub details including auto-build
+- Docker Store
+- Docker Cloud
+- Use new Swarms feature in Cloud to connect Mac/win to Swarm
+- Install and use Docker Registry as private image store
+- 3rd party registry options
+
+### Docker hub
+- Docker registry plus lightweight image building
+- Link Github/BitBucket to Hub and auto-build images on commit
+- Chain image building togetther
 
 
 
