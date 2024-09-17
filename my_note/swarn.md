@@ -383,6 +383,45 @@ docker service create --name p2 --health-cmd="pg_isready -U postgres || exit 1" 
 - Link Github/BitBucket to Hub and auto-build images on commit
 - Chain image building togetther
 
+- automated build is good
+
+### Docker Registry
+- A private image registry for your network
+- part of the   GitHub repo
+
+TD:
+- Secure the Registry with TLS
+- Storage cleanup via Garbage Collection
+- Enable Hub caching via '--registry-mirror'
+
+docker container run -d -p 5000:5000 --name registry registry
+docker pull hello-world
+docker container run hello-world
+
+docker tag hello-world 127.0.0.1:5000/hello-world
+docker push 127.0.0.1:5000/hello-world
+
+docker image remove hello-world
+
+docker image pull 127.0.0.1:5000/hello-world
+
+docker container rm registry
+
+docker container run -d -p 5000:5000 --name registry -v $(pwd)/registry-data:/var/lib/registry registry
+
+
+
+hello-world is the repository name, which we are using as a short form of the full image name. The full name is docker.io/hello-world:latest. That breaks down into three parts:
+
+docker.io - the hostname of the registry which stores the image;
+hello-world - the repository name, in this case in {imageName} format;
+latest - the image tag.
+If a tag isn’t specified, then the default latest is used. If a registry hostname isn’t specified then the default docker.io for Docker Store is used. If you want to use images with any other registry, you need to explicitly specify the hostname - the default is always Docker Store.
+
+
+
+
+
 
 
 
