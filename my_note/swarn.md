@@ -418,6 +418,53 @@ hello-world - the repository name, in this case in {imageName} format;
 latest - the image tag.
 If a tag isn’t specified, then the default latest is used. If a registry hostname isn’t specified then the default docker.io for Docker Store is used. If you want to use images with any other registry, you need to explicitly specify the hostname - the default is always Docker Store.
 
+LTS
+Self cetifecate
+openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/domain.key -x509 -days 365 -out certs/domain.crt
+
+mkdir registry-data
+docker container run -d -p 5000:5000 --name registry \
+  --restart unless-stopped \
+  -v $(pwd)/registry-data:/var/lib/registry -v $(pwd)/certs:/certs \
+  -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \
+  -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key \
+  registry
+
+--restart unless-stopped - restart the container when it exits, unless it has been explicitly stopped. When the host restarts, Docker will start the registry container, so it’s always available.
+-v $pwd\certs:c:\certs - mount the local certs folder into the container, so the registry server can access the certificate and key files;
+-e REGISTRY_HTTP_TLS_CERTIFICATE - specify the location of the SSL certificate file;
+-e REGISTRY_HTTP_TLS_KEY - specify the location of the SSL key file.
+
+
+docker kill registry
+docker rm registry
+docker run -d -p 5000:5000 --name registry \
+  --restart unless-stopped \
+  -v $(pwd)/registry-data:/var/lib/registry \
+  -v $(pwd)/certs:/certs \
+  -v $(pwd)/auth:/auth \
+  -e REGISTRY_HTTP_TLS_CERTIFICATE=/certs/domain.crt \
+  -e REGISTRY_HTTP_TLS_KEY=/certs/domain.key \
+  -e REGISTRY_AUTH=htpasswd \
+  -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
+  -e "REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd" \
+  registry
+
+
+### Private Docker Registry with Swarm
+- works the same way as localhost
+- because of routing mesh, all nodes can see 127.0.0.1:5000
+- do not forget to decide how to store images(volume driver)
+- Note: all nodes must be able to access images
+- Use a hosted SaaS registry if possibl
+
+
+
+# Docker in Production
+
+## 96 what need to know/decide
+
+
 
 
 
