@@ -465,6 +465,15 @@ docker run -d -p 5000:5000 --name registry \
 ## 96 what need to know/decide
 
 
+## config the cluster
+
+docker node update --label-add dc=a node1
+docker node update --label-add dc=a node2
+docker node update --label-add dc=z node3
+
+docker service create --name redis --replicas 12 --placement-pref 'spread=node.label.dc' redis
+
+This will assign 3 replicas to each node1 and node2, 6 replicas to node3 -> reson is le spread 
 
 
 
