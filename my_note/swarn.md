@@ -475,11 +475,3 @@ docker service create --name redis --replicas 12 --placement-pref 'spread=node.l
 
 This will assign 3 replicas to each node1 and node2, 6 replicas to node3 -> reson is le spread 
 
-
-
-
-
-
-
-
-g -c user.name="hudir" -c user.email=hudirybw@gmail.com ci -am "keep on swarm" && gs
