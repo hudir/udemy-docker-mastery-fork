@@ -14,22 +14,23 @@ Secrets, configMaps and more
 
 ## kubectl run, kubectrl create and apply
 
-- kubectl run   -- like docker run (single pod per command since 1.18)
-- kubectrl create -- like dokcer create (create some resources via CLI or YAML)
-- kubectrl apply -- like a stack deply with swarm (create/update anything via YAML)
+- `kubectl run`   -- like docker run (single pod per command since 1.18)
+- `kubectl create` -- like dokcer create (create some resources via CLI or YAML)
+- `kubectl apply` -- like a stack deply with swarm (create/update anything via YAML)
 
 ## creating a Pod with kubectl
 kubectl version
+kubectl version --short !not working
 
 Two way to deploy Pods(containers): via commands or via YAML
 
 in kube no random name, need give every pod a name
 
-kubectl run my-nginx --image nginx
+`kubectl run my-nginx --image nginx`
 
 List the pod
->kubectl get pods
->kubectl get all
+`kubectl get pods`
+`kubectl get all`
 
 Pods: why do they exist
 - layer of abstraction - some containers share same ip and config
@@ -42,8 +43,14 @@ user command create a pod -> control plane(save reqest in db) -> kubelet see the
 
 
 ## creating a deployment with kubectl
->kubectl create deployment my-nginx --image nginx
->kubectl get pods
->kubectl get all
+`kubectl create deployment my-nginx --image nginx`
+`kubectl create deploy my-nginx --image nginx`
+`kubectl get pods`
+`kubectl get all`
 
-user command deployment -> api ->
+different resource type
+Deployment -> ReplicaSet(for each new version, old still exist) -> Pods
+user command deployment -> api -> store in etcd DB -> manager(with controler) see the new resource -> create a new ReplicaSet request in DB -> ReplicaSet manager -> Create Pods, adding back to DB -> schelduer assign the pods to a node
+
+`kubectl delete pod my-nginx`
+`kubectl delete deployment my-nginx`
