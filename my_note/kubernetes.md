@@ -176,3 +176,66 @@ Basic Service Types
   - Not used for Pods, but for giving pods a DNS name to use for something outside Kubernetes
 
 - Kuberneter Ingress; for http traic
+
+## 127 Creating a ClusterIP Service
+`kubectl get pods -w`
+`kubectl create deployment httpenv --image=bretfisher/httpenv`
+`kubectl scale deployment/httpenv --replicas=5`
+`kubectl expose deploymen/httpenv --port 8888`
+`kubectl get service`
+`kubectl run tmp-shell --rm -it --image bretfisher/netshoot -- bash`
+`curl httpenv:8888`
+
+Running a shell in Kubernetes pods
+Since version 1.18, the kubectl run command only creates a single pod, with a single container from a single image. Here's what --help says about the run command format:
+
+kubectl run NAME --image=image [--env="key=value"] [--port=port] [--dry-run=server|client] [--overrides=inline-json] [--command] -- [COMMAND] [args...] [options]
+
+kubectl run NAME: that's the easy part. The run command requires a name. It also requires an image to create the container from. Name and image are the only two required parts of a run command.
+
+--rm: Like docker run, it will delete the pod after it exits.
+
+-it: Like docker run, this is shorthand for two different options. They can exist together because the short version of each option only requires one dash, and like docker and many other Linux commands, single-letter options can be combined in a shorthand. -i is short for --stdin=true and keeps the input connection open between your shell and the container (so we can type multiple commands like curl without having to start a new container.) -t is short for --tty=true and allocates a virtual terminal for us to use in the container (which we run a bash shell in that tty).  We often use these two options together when we want a shell inside a container (via run, exec, etc.)
+
+--image: The container image we want to start the container from. It's required in a run command.
+
+-- [COMMAND] [args...] [options]: This is the tricky part. The double-dash is a common shell way for tools "to signify the end of command options, after which only positional arguments are accepted." In this case the double-dash separates the kubectl CLI options and allows us to overwrite the Dockerfile CMD with a new command and arguments/options.  Unlike docker run, kubectl run requires the double-dash to override the command. You can also just use --command rather than the double dash, but I tend to prefer the double-dash method because it's used in many other areas of Linux shells and it also doesn't require me to quote the whole command I want to override.
+
+What is bretfisher/netshoot?
+A colleague, Nicola Kabar, created a popular tool years ago called netshoot, which was nothing more than a container image full of common Linux utilities that are good for troubleshooting Linux, Docker, and Kubernetes, and particularly networking. Hence, "netshoot" as in Network Troubleshooting.
+
+I forked that project, and added some of my own tools, which you can find here: bretfisher/netshoot
+
+It runs a zsh shell as the default CMD, but in the previous lecture, I had us run bash instead, just as a learning example.
+
+
+## 135 Creating a NodePort and LoadBalancer Service
+- Expose a NodePort so we can access it via the host IP(including localhost on Win/Linux/macOS)
+`kubectl expose deployment/httpenv --port 8888 --name httpenv-np --type NodePort`
+`kubectl get services`
+
+- A NodePort service also creates a ClusterIP ?!(could be changed in yaml -> more options)
+- These three service types are additive, each one creates the ones above it:
+   - ClusterIP
+   - NodePort
+   - Load Balancer
+
+Docker desktop has a build-in LoadBalancer Service that publishes the --port on localhost
+`kubectl expose deployment/httpenv --port 8888 --name httpenv-lb --type LoadBalancer`
+curl localhost:8888
+
+Cleanup
+`kubectl delete service/httpenv-l`
+
+## 136 Kebernetes Services DNS
+- Starting with 1.11, internal DNS is provided by CoreDNS
+- Like Swarm, this is DNS-Based Service Discovery
+- So far we've been using hostnames to access Services
+  > curl <hostname>
+- But that only works for Servies in the same Namespces
+  > kubectl get namespces
+- Services also have a FQDN -> fully qualified domain name
+  > curl <hostname>.<namespaces>.svc.cluster.local
+
+  # Section 19 Kubernetes Management Techniques
+  
