@@ -238,4 +238,98 @@ Cleanup
   > curl <hostname>.<namespaces>.svc.cluster.local
 
   # Section 19 Kubernetes Management Techniques
+
+  ## 138 YAML Generators in kubectl Commands
+  Resource Generators
+  - These commands use helper templates called "generators"
+  - Every resource in Kubernetes has a specification or 'spec'
+  >kubectl create deployment sample --image nginx --dry-run=client -o yaml
+    - You can output those templates with --dry-run=client -o yaml
+    - You can use those YAML defaults as a starting point
+    - Generators are "opinionated defaults"
   
+  `kubectl create deployment test --image nginx --dry-run=client`
+  `kubectl create deployment test --image nginx --dry-run=client -o yaml`
+  `kubectl create job test --image nginx --dry-run=client -o yaml`
+  `kubectl expose deployment/test --port 80 --dry-run=client -o yaml`
+
+## 139. Imperative vs. Declarative
+- Imperative: Foucus on How a program operates
+- Declarative: Focucs on what a program should accomplish
+- Example: "I'd like a cup of coffee"
+- Impreative: I boil water, scoop out 42 grams of medium-fine grounds, pouroor over 700 grams of water, etc.
+- Declarative: "Barista, I'd like a cup of coffee"
+
+### Kubernetes Imperative
+- Examples: `kubectl run`, kubectl create deployment, kubectl update
+  - We start with a state we know (no deployment exists)
+  - We ask kubectl run to create a deployment
+- Different commands are required to change that deployment
+- Different commands are required per Object
+- Imperative is easier when you know the state
+- Imperative is easier to get started
+- Imperative is easier for humans at the CLI
+- Imperative is NOT easy to automate
+
+### Kubernetes Declarative
+- Example: `kubectl apply -f my-resources.yaml`
+  - We don't know the current state
+  - We only know what we want the end result to be (yaml contents)
+- Same command each time (tiny exception for delete)
+- Resources can be all in a file, or many files(apply a whole dir)
+- Requires understanding the YAML keys and values
+- More work than kubectl run for just starting a pod
+- The easiest way to automate
+- The eventual path to GitOps happiness
+
+
+## 140. Three Management Approaches
+- Imperative commands: run, expose, scale, edit, create deployment
+    - Best for dev/learning/personal projects
+    - Easy to learn, hardest to manage over time
+- Imperative objects: create -f file.yml, replace -f file.yml, delete...
+    - Good for prod of small environments, single file per command
+    - Store your changes in git-based yaml files
+    - Hard to automate
+- Declarative objects: apply -f file.yml or dir\, diff
+    - Best for prod, easier to automate
+    - Harder to understand and predict changes
+
+- Most Important Rule:
+  - Don't mix the three approaches
+
+- Best recommentdations from Bret:
+  - Learn the Imperative CLI for easy control of local and test setups
+  - Move to apply -f file.yml and apply -f dirctory\ for prod
+  - Store yaml in git , git commit each change before you apply
+  - This trains you for later doing GitOps
+
+# Declarative kubernetes YAML
+
+## 141. Section Intro
+
+## 142. Kubectl apply
+> kubectl apply -f filename.yml
+Skip -> kubectl create, kubectl replace, kubectl edit
+
+### Using kubectl apply
+- create/update resources in a file
+  > kubectl apply -f myfile.yaml
+- create/update a whole direcory of yaml
+  > kubectl apply -f myyaml/
+- create/update from a URL
+  > kubectl apply -f https//bret.run/pod.yml
+- Be careful, lets look at it first(browser or curl)
+  > curl -L https://bret.run/pod
+
+
+## 143. Kubernetes Configuration YAML
+- Kubernetes configuration file (YAML or JSON)
+- Each file contains one or more manifests
+- Each manifest describes an API object (deployment, job, secret)
+- Each manifest needs four parts (root key: values in the file)
+   - apiVersion:
+   - kind:
+   - metadata:
+   - spec:
+
