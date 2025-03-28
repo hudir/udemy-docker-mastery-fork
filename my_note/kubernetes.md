@@ -333,3 +333,109 @@ Skip -> kubectl create, kubectl replace, kubectl edit
    - metadata:
    - spec:
 
+check folder k8s-yaml
+
+## 144. Building Your YAML Files
+- kind: We can get a list of resources the cluster supports
+ > kubectl api-resources
+- Notice some resources have multiple API's(old vs. new)
+- apiVersion: We can get the API version the cluster supports
+ > kubectl api-versions
+- kind + apiVersion => which resources and which version of the resource used
+- metadata: only name is required
+- spec: Where all the action is at!
+
+## 145. Building Your YAML Spec
+- We can get all the keys each kind supports
+ > kubectl explain [services or others in kind] --recursive  => show all diff keys 
+- Get more details
+ > kubectl explain service.spec
+- We can walk through the spec this way
+ > kubectl explain services.spec.type
+- spec: can have sub spec: of other resources
+ > kubectl explain deployment.spec.template.spec.volumes.nfs.server
+- We can also use docs
+ kubernetes.io/docs/reference/#api-reference
+
+## Dry Run CLI Changes
+--dry-run  => --dry-run=client
+--server-dry-run  => --dry-run=server
+
+
+## 147. Dry Runs and Diff's
+- dry-run a create
+ > kubectl apply -f app.yml --dry-run=client
+- dry-run a create/update on server
+ > kubectl apply -f app.yml --dry-run=server
+- see a diff visually
+ > kubectl diff -f app.yml
+
+ ## 148. Labels and Label Selectors
+
+ - Labels goes under metadata: in you YAML
+ - Simple list of key: value for identifying your resource later by selecting, grouping, or filtering for it
+ - Common examples include tier: frontend, app:api, env:prod, customer: acme.co
+ - Not meant to hold complex, large, or non identifying info, which is what annotations are for
+ - filter a get command
+  > kubectl get pods -l app=nginx
+ - apply only matching labels
+  > kubectl apply -f myfile.yaml -l app=nginx
+
+   Label Selectors
+   - The Services need to know which pod to send their traffics
+   - Services need to directly talk to pod not deploy
+   - Many resources use Label Selectors to link resource dependencies
+   - You'll see these match up in the Service and Deployment YAML
+   - Use Labels and Selectors to control which pods go to which nodes
+   - Taints and Tolerations also control node placement
+
+
+# Your next steps and the future of kubernetes
+
+## 150. Storage in Kubernetes
+- Storage and stateful workloads are harder in all systems
+- Containers make it both harder and easier than before
+- StatefulSets is a new resource type, makeing Pods more sticky
+- Avoid stateful workloads for first few deployments until you're good at the basics
+- Use db-as-a-service whenever you can
+
+### Volumes in Kubernetes
+- Creating and connecting Volumes: 2 types
+- Volumes
+   - Tied to lifecycle of a Pod
+   - All containers in a single Pod can share them
+- PersistentVolumes
+   - Created at the cluster level, outlives a Pod
+   - Separates storage config from Pod using it
+   - Multiple Pods can share them
+- CSI plugins are the new way to connect to storage
+
+## Ingress
+- None of our Service types work ar OSI Layer(HTTP)
+- How do we route outside connections base on hostname or URL?
+- Ingress Controller(optional) do this with 3rd party proxies
+- Nginx is popular, but Traefix, HAProxy, F5, Envoy, Istio, etc.
+- Implementation is specific to Controller chosen
+
+## 152. CRD's and The Operator Pattern
+- You can add 3rd party Resources and Controllers
+- This extends Kuberntes API and CLI
+- Apattern is starting to emerge of using these together
+- Operator: automate deployment and management of complex apps
+- e.g. Databases, monitoring tools, backups, and custom ingresses
+
+## 153. Higher Deployment Abstractions
+- All our kubectl commands just talk to the Kubernetes API
+- Kubernetes has limited built-in templating, versioning, tracking, and management of your apps
+- There are now over 60 3rd party tools to do that, but many are defunct
+- Helm is the most popular
+- "Compose on Kubernetes" comes with Docker Desktop
+- These are optional
+- Most distros support helm
+
+Templating YAML
+- Many of the deployment tools have templating options
+- you'll need a solution as the number of environments/apps grow
+- Helm was the first "winner" in this space, but can be complex
+- offical kustomize feature works out of the box
+- docker app and compose-on-kubernetes are Docker's way
