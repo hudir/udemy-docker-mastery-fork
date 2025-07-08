@@ -439,3 +439,46 @@ Templating YAML
 - Helm was the first "winner" in this space, but can be complex
 - offical kustomize feature works out of the box
 - docker app and compose-on-kubernetes are Docker's way
+
+## 154. Kubernetes Dashboard
+- Default GUI for "upstream" Kubernetes
+  -> github.com/kubernetes/dashboard
+- Som distributions have their own GUR (Rancher, Docker Ent, OpenShift)
+- Clouds don't have it by default
+- Let's you view resources and upload YAML
+- Safety first!
+
+## 155. Namespaces and Context
+- Namespaces limit scope, aka "virtual clusters"
+- Not related to Dokcer/Linux namespaces
+- Won't need them in small clusters
+- There are some build-in, to hide system stuff from kubectl "users"
+ > kubectl get namespaces
+ > kubectl get all --all-namespaces
+- Context changes kubectl cluster and namespace
+    - Cluster
+    - Authentication/User
+    - Namespace
+- See ~/.kube/config file
+ > kubectl config get-contexts
+ If there are more clusters like remote one, set up to let local talk to them
+ > kubectl config set*
+
+
+## 156. Future of Kubernetes
+- More focus on stability and security
+- Clearing away deprecated features like kubectl run generators
+- Improving featuers like server side dry-run
+- More and improved Operators
+- Helm 3.0
+- More declarative-style features
+- Better Windows Server support
+- More edge cases, kubeadm HA clusters
+
+Related Projects
+- Kubernetes has become the "differencing and scheduling engine backbone" for so many new projects
+- Knative - Severless workloads on Kubernetes
+- k3s - mini, simple kuberntes
+- k3OS - Minimal Linux OS for k3s
+- Service Mesh - New layer in distributed app traffic for better control, security and monitoring
+
