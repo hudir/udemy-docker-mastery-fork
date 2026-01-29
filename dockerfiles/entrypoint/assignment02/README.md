@@ -20,4 +20,4 @@ This assignment has you building a Dockerfile from scratch to perform startup ta
 - Once this image builds, you can run it with a `-p 8000:8000` to make the web server available on http://localhost:8000
 - The most interesting URL for testing is the built-in docs of FastAPI at http://localhost:8000/docs
 - Python pip has a `--no-cache-dir` option to avoid caching the package index locally, so a command would look like `pip install --no-cache-dir -r requirements.txt`.
-- Checkout the `docker-entrypoint.sh` script for the startup tasks. It's a simple script that checks several common things like ensuring the `/app/data` directory exists and copying over any initial data files (which you might want to peak at, 😎).
+- Checkout the `docker-entrypoint.sh` script for the startup tasks. It's a simple script that checks several common things like ensuring the `/app/data` directory exists and copying over any initial data files (which you might want to peak at, 😎 http://localhost:8000/api/items).

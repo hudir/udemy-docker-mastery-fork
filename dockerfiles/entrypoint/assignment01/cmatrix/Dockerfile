@@ -2,3 +2,10 @@
 # If you get stuck, the answer/ directory has the solution
 
 
+FROM alpine:latest
+
+RUN apk update && apk add --no-cache cmatrix 
+
+ENTRYPOINT ["cmatrix"]
+
+CMD ["-abs","-C","red"]
