@@ -229,4 +229,47 @@ Note: When setting a Dockerfile's USER, use numbers, which work better in Kubern
 Note 2: If ps doesn't work in your container, you may need to install it. In debian-based images with apt, you can add it with apt-get update && apt-get install procps
 
 # 50 Assignment: Bind Mounts
+
 docker run -p 80:4000 -v $(pwd):/site bretfisher/jekyll-serve
+
+# Docker context
+ used for run docker cli command in different context/envirment
+
+# ssh management
+  in ~/.ssh/config file could set preset for different ssh connect.
+  so when use in Terminal like: ssh name
+
+# Docker API：
+
+GET /containers/json - 获取容器列表（类似 docker ps）
+
+POST /containers/create - 创建容器（类似 docker create）
+
+POST /containers/{id}/start - 启动容器（类似 docker start）
+
+curl --unix-socket ~/.docker/run/docker.sock \
+  "http://localhost/v1.45/containers/json"
+
+# 等效于 docker ps -a
+curl --unix-socket ~/.docker/run/docker.sock \
+  "http://localhost/containers/json?all=true" | jq '.[] | {id: .Id, name: .Names[0], status: .Status}'
+
+
+  # 1. 创建容器（等效于 docker create）
+CONTAINER_ID=$(curl --unix-socket ~/.docker/run/docker.sock \
+  -X POST "http://localhost/containers/create" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "Image": "alpine",
+    "Cmd": ["echo", "hello world"],
+    "AttachStdin": false,
+    "AttachStdout": true,
+    "AttachStderr": true,
+    "Tty": false,
+    "OpenStdin": false
+  }' | jq -r '.Id')
+
+# 2. 启动容器（等效于 docker start）
+curl --unix-socket ~/.docker/run/docker.sock \
+  -X POST "http://localhost/containers/$CONTAINER_ID/start"
+
